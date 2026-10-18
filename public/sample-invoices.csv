@@ -1,0 +1,4 @@
+source_id,buyer_name,buyer_email,amount,due_date,expected_payment_date,status,assignment_restricted,notes
+INV-2041,Harborwell Brands,jordan@harborwell.demo,18500.00,2026-11-30,2026-11-30,APPROVED,false,Brand system retainer
+INV-2042,Lumen & Co,priya@lumen.demo,9200.00,2026-12-12,2026-12-12,APPROVED,false,Campaign production
+INV-2043,Harborwell Brands,jordan@harborwell.demo,41000.00,2026-12-20,2026-12-20,APPROVED,false,Q4 media

@@ -1,0 +1,120 @@
+@import "tailwindcss";
+
+:root {
+  --ink: #12211c;
+  --ink-soft: #3d4f48;
+  --paper: #f4efe4;
+  --paper-2: #ebe4d4;
+  --white: #fcfaf4;
+  --brass: #9a7040;
+  --brass-2: #c5924a;
+  --forest: #1f4d3f;
+  --good: #1f6b4a;
+  --bad: #9a3b2f;
+  --warn: #8a6a22;
+  --line: rgba(18, 33, 28, 0.12);
+}
+
+@theme inline {
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-paper: var(--paper);
+  --color-paper-2: var(--paper-2);
+  --color-brass: var(--brass);
+  --color-forest: var(--forest);
+  --color-good: var(--good);
+  --color-bad: var(--bad);
+  --font-sans: var(--font-geist-sans);
+  --font-serif: var(--font-newsreader);
+  --font-mono: var(--font-geist-mono);
+}
+
+* {
+  border-color: var(--line);
+}
+
+html,
+body {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+body {
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+.serif {
+  font-family: var(--font-newsreader), Georgia, serif;
+}
+
+.hairline {
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+table.data {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.925rem;
+}
+
+table.data th {
+  text-align: left;
+  font-weight: 600;
+  color: var(--ink-soft);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.7rem 0.85rem;
+  border-bottom: 1px solid var(--line);
+}
+
+table.data td {
+  padding: 0.85rem;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+
+table.data tr:hover td {
+  background: rgba(255, 255, 255, 0.45);
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="date"],
+input[type="file"],
+select,
+textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  background: var(--white);
+  border-radius: 0.55rem;
+  padding: 0.7rem 0.8rem;
+  color: var(--ink);
+  outline: none;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  box-shadow: 0 0 0 3px rgba(154, 112, 64, 0.22);
+  border-color: var(--brass);
+}
+
+label.field {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+
+label.field span.help {
+  font-weight: 400;
+  color: var(--ink-soft);
+  font-size: 0.8rem;
+}

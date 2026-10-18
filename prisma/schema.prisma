@@ -1,0 +1,170 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Organization {
+  id                     String   @id @default(cuid())
+  name                   String
+  kind                   String
+  legalName              String?
+  city                   String?
+  region                 String?
+  timezone               String   @default("America/New_York")
+  paymentInstructions    String?
+  discountBudgetCents    Int      @default(0)
+  cashLimitCents         Int      @default(0)
+  annualAvoidableRateBps Int      @default(1800)
+  opportunityRateBps     Int      @default(500)
+  subscriptionStatus     String   @default("NONE")
+  createdAt              DateTime @default(now())
+
+  users            User[]
+  soldInvoices     Invoice[]     @relation("SellerInvoices")
+  boughtInvoices   Invoice[]     @relation("BuyerInvoices")
+  soldOffers       Offer[]       @relation("SellerOffers")
+  boughtOffers     Offer[]       @relation("BuyerOffers")
+  invitations      Invitation[]
+  auditEvents      AuditEvent[]
+}
+
+model User {
+  id             String   @id @default(cuid())
+  email          String   @unique
+  name           String
+  passwordHash   String
+  role           String
+  isApprover     Boolean  @default(false)
+  organizationId String
+  createdAt      DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  auditEvents  AuditEvent[]
+}
+
+model Invoice {
+  id                   String   @id @default(cuid())
+  sellerOrganizationId String
+  buyerOrganizationId  String
+  sourceId             String
+  amountCents          Int
+  originalDueDate      DateTime
+  expectedPaymentDate  DateTime
+  status               String
+  assignmentRestricted Boolean  @default(false)
+  importVersion        Int      @default(1)
+  notes                String?
+  createdAt            DateTime @default(now())
+
+  seller Organization @relation("SellerInvoices", fields: [sellerOrganizationId], references: [id], onDelete: Cascade)
+  buyer  Organization @relation("BuyerInvoices", fields: [buyerOrganizationId], references: [id], onDelete: Cascade)
+  offers Offer[]
+
+  @@unique([sellerOrganizationId, sourceId])
+}
+
+model Offer {
+  id                     String   @id @default(cuid())
+  invoiceId              String
+  sellerOrganizationId   String
+  buyerOrganizationId    String
+  version                Int      @default(1)
+  publicToken            String   @unique
+  originalAmountCents    Int
+  proposedAmountCents    Int
+  proposedSettlementDate DateTime
+  initiationDeadline     DateTime
+  expiry                 DateTime
+  paymentInstructions    String
+  conditions             String
+  status                 String
+  createdById            String?
+  rejectionReason        String?
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  invoice   Invoice       @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  seller    Organization  @relation("SellerOffers", fields: [sellerOrganizationId], references: [id], onDelete: Cascade)
+  buyer     Organization  @relation("BuyerOffers", fields: [buyerOrganizationId], references: [id], onDelete: Cascade)
+  agreement Agreement?
+}
+
+model Agreement {
+  id            String   @id @default(cuid())
+  offerId       String   @unique
+  invoiceId     String
+  termsJson     String
+  sellerUserId  String
+  buyerUserId   String
+  acceptedAt    DateTime @default(now())
+
+  offer   Offer    @relation(fields: [offerId], references: [id], onDelete: Cascade)
+  receipt Receipt?
+}
+
+model Receipt {
+  id           String    @id @default(cuid())
+  agreementId  String    @unique
+  amountCents  Int
+  initiatedAt  DateTime?
+  receivedAt   DateTime?
+  evidenceRef  String
+  status       String
+  notes        String?
+  createdById  String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  agreement Agreement @relation(fields: [agreementId], references: [id], onDelete: Cascade)
+}
+
+model Invitation {
+  id             String    @id @default(cuid())
+  email          String
+  name           String
+  organizationId String
+  role           String
+  token          String    @unique
+  expiresAt      DateTime
+  acceptedAt     DateTime?
+  createdAt      DateTime  @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+}
+
+model AuditEvent {
+  id             String   @id @default(cuid())
+  actorUserId    String?
+  organizationId String?
+  action         String
+  entityType     String
+  entityId       String
+  summary        String
+  createdAt      DateTime @default(now())
+
+  actor        User?         @relation(fields: [actorUserId], references: [id])
+  organization Organization? @relation(fields: [organizationId], references: [id])
+}
+
+model PilotLead {
+  id            String   @id @default(cuid())
+  name          String
+  email         String
+  company       String
+  invoiceVolume String
+  notes         String?
+  createdAt     DateTime @default(now())
+}
+
+model ConstraintRun {
+  id        String   @id @default(cuid())
+  kind      String
+  status    String
+  inputJson String
+  resultJson String
+  createdAt DateTime @default(now())
+}
